@@ -1,0 +1,49 @@
+import numpy as np # library to handle data in a vectorized manner
+import pandas as pd # library for data analsysis
+pd.set_option('display.max_columns', None)
+pd.set_option('display.max_rows', None)
+
+
+from IPython.display import display_html
+
+print('Libraries imported.')
+
+# Create csv file with date
+#dfs = pd.read_html('https://en.wikipedia.org/wiki/List_of_postal_codes_of_Canada:_M',header=0)
+#df = dfs[0]
+#df.to_csv("toronto.csv")
+
+df = pd.read_csv('toronto.csv', index_col=[0])
+print(df.head())
+df = df[df.Borough != 'Not assigned']
+print(df.head())
+print(df.columns) # finding the columns
+
+df = df.groupby(by=['Postcode','Borough']).agg(lambda x: ','.join(x))
+
+df = df.replace({'Not assigned' : "Queen's Park"})
+
+
+df = df.reset_index(['Postcode', 'Borough'])
+
+print(df.head())
+
+df.rename(columns={"Postcode": "PostalCode", 'Neighbourhood':'Neighborhood'}, inplace=True)
+
+print(df)
+print(df.shape)
+
+print(df.head())
+
+
+df1 = pd.read_csv('geopy_toronto.csv')
+
+print(df1.head())
+
+df3 = pd.concat([df, df1], axis=1)
+print(df3.head())
+
+df3 = df3.drop(['Postal Code'], axis =1) #cleaning the datafarme
+print(df3)
+print(df3.shape)
+df3.to_csv("toronto_cleaned.csv")
